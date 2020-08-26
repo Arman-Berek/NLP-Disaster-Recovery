@@ -49,9 +49,12 @@ def tokenize(text):
     Returns:
     clean_tokens (list): all cleaned tokens
     '''
+    # Convert all characters to lower case
     text = text.lower()
     text = re.sub(r"[^a-zA-Z0-9]", " ", text)
+    # Tokenize text
     tokens = word_tokenize(text)
+    # Lemmatize text
     lemmatizer = WordNetLemmatizer()
     clean_tokens = []
     for token in tokens:
@@ -64,12 +67,13 @@ def build_model():
     '''
     Uses the pipeline and grid search to train a model.
     '''
+    # Create ML pipeline
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(OneVsRestClassifier(GradientBoostingClassifier(random_state=0))))
     ])
-
+    # Use Grid search to find best parameters
     parameters = {
         'clf__estimator__estimator__min_samples_leaf': [2, 5],
         'clf__estimator__estimator__min_samples_split': [8, 10],
@@ -90,6 +94,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     Y_test: Target data.
     category_names (list): list of categories to create classification report for.
     '''
+    # Create a classification report for each category
     y_pred = model.predict(X_test)
     for category in range(len(category_names)):
         print("Classification report for: ", category_names[category])
@@ -98,6 +103,13 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    '''
+    Saves model as a pickle file.
+
+    Parameters:
+    model: trained model.
+    model_filepath (str): Name of pickle file to save to
+    '''
     pickle.dump(model, open(model_filepath, 'wb'))
 
 
