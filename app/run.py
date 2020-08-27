@@ -2,6 +2,7 @@ import json
 import plotly
 import pandas as pd
 
+
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
@@ -44,9 +45,14 @@ def index():
     genre_names = list(genre_counts.index)
 
     label_counts = df.iloc[:, 4:].sum()
-    label_names = list(label_sums.index)
+    label_names = list(label_counts.index)
+
+    categories = df.iloc[:,4:]
+    avg_categories = categories.mean().sort_values(ascending=False)[1:11]
+    cat_names = list(avg_categories.index)
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
+
     graphs = [
         {
             'data': [
@@ -86,7 +92,25 @@ def index():
                     'categoryarray': [x for _, x in sorted(zip(label_counts, label_names))]
                 },
             }
-        }
+        },
+        {
+                'data': [
+                    Bar(
+                        x= cat_names,
+                        y= avg_categories
+                    )
+                ],
+
+                'layout': {
+                    'title': 'Top Categories',
+                    'yaxis': {
+                        'title': 'Percent'
+                    },
+                    'xaxis': {
+                        'title': 'Category'
+                    }
+                }
+        },
     ]
 
     # encode plotly graphs in JSON
@@ -120,4 +144,5 @@ def main():
 
 
 if __name__ == '__main__':
+    main()
     main()
